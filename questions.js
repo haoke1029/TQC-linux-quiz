@@ -278,7 +278,7 @@ const quizData = [
   {
     "id": "L4010024",
     "question": "如附圖所示，小明利用指令ip address show device enp0s3查詢網卡配置，請問下列敘述哪一項正確？",
-    "image": "image/L4010024.png",
+    "image": "image/L4010024.PNG",
     "options": [
       "目前該網卡的IP Address是動態配置、並且已經啟用",
       "目前該網卡的IP Address是靜態配置、並且已經啟用",
@@ -291,7 +291,7 @@ const quizData = [
   {
     "id": "L4010025",
     "question": "如附圖所示，小明準備設定自己新個人電腦的網路參數，他想要進一步知道實驗室對外的連線參數設定，特別是預設路由的IP Address。剛好學長告訴他一行非常重要的Ubuntu指令，利用該指令可以查出預設路由的設定值。附圖是該指令的輸出結果，下列敘述哪一項正確？",
-    "image": "image/L4010025.png",
+    "image": "image/L4010025.PNG",
     "options": [
       "該網卡的預設路由為10.0.2.0",
       "該網卡的預設路由為10.0.2.2",
@@ -352,7 +352,7 @@ const quizData = [
   {
     "id": "L4010030",
     "question": "查看/etc/netplan/00-installer-config.yaml，內容包含「dhcp4: true」，下列敘述哪些正確？(複選題)",
-    "image": "image/L4010030.png",
+    "image": "image/L4010030.PNG",
     "options": [
       "目前該主機的IP Address為靜態配置",
       "目前該主機的IP Address為動態配置",
@@ -365,7 +365,7 @@ const quizData = [
   {
     "id": "L4010031",
     "question": "如附圖所示，已知目前Ubuntu主機採取預設的netplan管理網路，查看/etc/netplan/01-demo01-config.yaml內容，下列敘述哪些正確？(複選題)",
-    "image": "image/L4010031.png",
+    "image": "image/L4010031.PNG",
     "options": [
       "目前主機的網路底層renderer模組為networkd",
       "目前主機的網路底層renderer模組為NetworkManager",
@@ -378,7 +378,7 @@ const quizData = [
   {
     "id": "L4010032",
     "question": "查看/etc/netplan/02-demo02-config.yaml網卡組態檔，關於DNS Server與預設路由的設定，下列哪一項敘述錯誤？",
-    "image": "image/L4010032.png",
+    "image": "image/L4010032.PNG",
     "options": [
       "目前主機的網路底層renderer模組為NetworkManager",
       "目前設定了兩組DNS Server：10.0.3.1以及8.8.8.8",
@@ -391,7 +391,7 @@ const quizData = [
   {
     "id": "L4010033",
     "question": "小明需要將預設路由改為（10.0.3.254），在編輯YAML設定檔時，to: 與 via: 後方該填入哪些內容？(複選題)",
-    "image": "image/L4010033.png",
+    "image": "image/L4010033.PNG",
     "options": [
       "to: 10.0.3.254, via: 10.0.3.15",
       "to: 10.0.3.15, via: 10.0.3.254",
@@ -404,7 +404,7 @@ const quizData = [
   {
     "id": "L4010034",
     "question": "查看/etc/netplan/03-demo03-config.yaml，內容設定了兩組預設路由分別為 10.0.3.254 (metric: 100) 與 10.0.5.254 (metric: 200)，下列敘述何者正確？",
-    "image": "image/L4010034.png",
+    "image": "image/L4010034.PNG",
     "options": [
       "封包將會輪流由這兩組閘道傳遞",
       "10.0.3.254 的 metric 為 100、優先權較高，是最後的預設路由",
@@ -429,7 +429,7 @@ const quizData = [
   {
     "id": "L4010036",
     "question": "小明發現 /etc/netplan 目錄下存在多個 YAML 檔案，下列敘述哪一項正確？",
-    "image": "image/L4010036.png",
+    "image": "image/L4010036.PNG",
     "options": [
       "netplan 組態檔案只能定義一個，否則會出錯",
       "可以有多個組態檔案，netplan 會依照字母順序由小而大逐一套用",
@@ -478,7 +478,7 @@ const quizData = [
   {
     "id": "L4010040",
     "question": "如何「完全地停止」networkd 服務，使其重開機後也不會啟動？",
-    "image": "image/L4010040.png",
+    "image": "image/L4010040.PNG",
     "options": [
       "sudo systemctl stop systemd-networkd",
       "sudo systemctl disable systemd-networkd",
@@ -839,7 +839,7 @@ const quizData = [
   {
     "id": "L4010070",
     "question": "NAT 指令涉及 POSTROUTING 與 SNAT，將 192.168.1.0/24 轉換為 120.110.100.101，意義為何？",
-    "image": "image/L4010070.png",
+    "image": "image/L4010070.PNG",
     "options": [
       "將該網段封包均轉向至 120.110.100.101",
       "凡是經過 120.110.100.101 的封包均轉至內網",
@@ -876,7 +876,7 @@ const quizData = [
   {
     "id": "L4020003",
     "question": "如附圖所示為DHCP組態設定檔中子網路及遮罩，請問下列X及Y的值何者適用？(複選題)",
-    "image": "image/L4020003.png",
+    "image": "image/L4020003.PNG",
     "options": [
       "X=71　Y=100",
       "X=33　Y=88",
@@ -925,7 +925,7 @@ const quizData = [
   {
     "id": "L4020007",
     "question": "如附圖所示，是在DHCP伺服器預設組態設定檔中的設定，請問可以指定給clients的IP總數多少？",
-    "image": "image/L4020007.png",
+    "image": "image/L4020007.PNG",
     "options": [
       "5",
       "9",
@@ -938,7 +938,7 @@ const quizData = [
   {
     "id": "L4020008",
     "question": "如附圖所示，是在DHCP伺服器預設組態設定檔中的設定，請問下列哪一項錯誤？",
-    "image": "image/L4020008.png",
+    "image": "image/L4020008.PNG",
     "options": [
       "遮罩位元數26",
       "名稱伺服器example.org",
@@ -975,7 +975,7 @@ const quizData = [
   {
     "id": "L4020011",
     "question": "如附圖所示，是在DHCP伺服器預設組態設定檔中的設定，指定網卡實體位址08:00:2b:4c:29:32，固定使用IP joe.example.com，請問關鍵字KEYWORD下列哪一項正確？",
-    "image": "image/L4020011.png",
+    "image": "image/L4020011.PNG",
     "options": [
       "option",
       "host",
@@ -1359,7 +1359,7 @@ const quizData = [
   {
     "id": "L4020043",
     "question": "成功登入Samba伺服器分享目錄後，出現互動式命令列，請問下列哪一項「不是」登入後可以使用的內部指令？",
-    "image": "image/L4020043.png",
+    "image": "image/L4020043.PNG",
     "options": [
       "?",
       "get",
@@ -1720,7 +1720,7 @@ const quizData = [
   {
     "id": "L4030028",
     "question": "如附圖所示，為一網域名稱伺服器BIND的正解區域檔部分內容，當客戶端向其查詢主機www的IP位址時，請問下列哪一項敘述正確？",
-    "image": "image/L4030028.png",
+    "image": "image/L4030028.PNG",
     "options": [
       "BIND僅會回覆IP位址10.0.0.1",
       "BIND從三個IP位址（10.0.0.1、10.0.0.2、10.0.0.3）隨機挑選一個來回覆",
@@ -1757,7 +1757,7 @@ const quizData = [
   {
     "id": "L4030031",
     "question": "如附圖所示，為一正解區域檔部分內容，若許多人想寄電子郵件到admin@example.com時，下列敘述哪一項正確？",
-    "image": "image/L4030031.png",
+    "image": "image/L4030031.PNG",
     "options": [
       "mailhost1郵件伺服器接收10封電子郵件後，換mailhost2郵件伺服器接收20封電子郵件，並依此循環",
       "電子郵件會先寄到mailhost1郵件伺服器，若失敗才會改寄到mailhost2郵件伺服器",
@@ -1830,7 +1830,7 @@ const quizData = [
   {
     "id": "L4030037",
     "question": "如附圖所示，為某台名稱伺服器的/etc/bind/named.conf檔案部分內容，請問下列敘述哪一項錯誤？",
-    "image": "image/L4030037.png",
+    "image": "image/L4030037.PNG",
     "options": [
       "對於DNS區域example.com而言，該台名稱伺服器是次要名稱伺服器",
       "對於DNS區域example.com而言，主要名稱伺服器的IP位址是192.168.254.2",
@@ -1843,7 +1843,7 @@ const quizData = [
   {
     "id": "L4030038",
     "question": "如附圖所示，為一DNS區域example.com的正反解區域檔案之SOA紀錄，請問下列敘述哪一項錯誤？",
-    "image": "image/L4030038.png",
+    "image": "image/L4030038.PNG",
     "options": [
       "ns1.example.com是MNAME欄位，表示區域example.com的主要名稱伺服器之網域名稱",
       "hostmaster.example.com是RNAME欄位，表示區域example.com的管理員電子郵件地址為hostmaster@example.com",
@@ -1964,7 +1964,7 @@ const quizData = [
   {
     "id": "L4030048",
     "question": "如附圖所示，為一電子郵件的DKIM標頭，若想查詢其寄信網域的DKIM TXT資源紀錄，下列哪一項指令正確？",
-    "image": "image/L4030048.png",
+    "image": "image/L4030048.PNG",
     "options": [
       "nslookup dk1.nfu.edu.tw dkim",
       "nslookup dk1.nfu.edu.tw txt",
@@ -1989,7 +1989,7 @@ const quizData = [
   {
     "id": "L4030050",
     "question": "如附圖所示，下列哪一項數值用來讓次要名稱伺服器知道每隔多久的時間，必須向主要名稱伺服器檢查正/反解區域檔是否有更新？",
-    "image": "image/L4030050.png",
+    "image": "image/L4030050.PNG",
     "options": [
       "12h",
       "15m",
@@ -2662,7 +2662,7 @@ const quizData = [
   {
     "id": "L4050006",
     "question": "若欲關閉 Apache 的 Directory Listing (目錄列表功能)，下列哪一項修改方式正確？",
-    "image": "image/L4050006.png",
+    "image": "image/L4050006.PNG",
     "options": [
       "將AllowOverride None改為AllowOverride All",
       "將Require all granted改為Require all denied",
@@ -2687,7 +2687,7 @@ const quizData = [
   {
     "id": "L4050008",
     "question": "下列哪一項指令可以用來建立 Apache 基本驗證所需的合法使用者帳號與密碼檔？",
-    "image": "image/L4050008.png",
+    "image": "image/L4050008.PNG",
     "options": [
       "htpasswd",
       "passwd",
@@ -2700,7 +2700,7 @@ const quizData = [
   {
     "id": "L4050009",
     "question": "如果只允許帳號Mary可以讀取該目錄資源，而帳號George不可以，應使用下列哪一項設定？",
-    "image": "image/L4050009.png",
+    "image": "image/L4050009.PNG",
     "options": [
       "Require Mary not George",
       "Require user Mary",
@@ -2773,7 +2773,7 @@ const quizData = [
   {
     "id": "L4050015",
     "question": "如欲隱藏 Apache 版本與作業系統資訊，應在 security.conf 中如何設定？",
-   "image": "image/L4050015.png",
+   "image": "image/L4050015.PNG",
     "options": [
       "server_token off",
       "server_tokens off",
@@ -2858,7 +2858,7 @@ const quizData = [
   {
     "id": "L4050022",
     "question": "使用 openssl 指令自建金鑰與憑證時，下列關於 rsa:2048 的敘述何者錯誤？",
-    "image": "image/L4050022.png",
+    "image": "image/L4050022.PNG",
     "options": [
       "nodes 表示私密金鑰不要用密碼保護",
       "-days 指定憑證有效天數",
@@ -2955,7 +2955,7 @@ const quizData = [
   {
     "id": "L4050030",
     "question": "Nginx 建立使用者名稱與密碼認證功能時，通常使用哪一項指令建立密碼檔？",
-    "image": "image/L4050030.png",
+    "image": "image/L4050030.PNG",
     "options": [
       "htpasswd",
       "passwd",
@@ -3016,7 +3016,7 @@ const quizData = [
   {
     "id": "L4050035",
     "question": "如欲隱藏 Nginx 的版本號與作業系統資訊，應在 nginx.conf 如何設定？",
-    "image": "image/L4050035.png",
+    "image": "image/L4050035.PNG",
     "options": [
       "server_token off;",
       "server_tokens off;",
@@ -3149,7 +3149,7 @@ const quizData = [
   {
     "id": "L4050046",
     "question": "如附圖所示，是Nginx裡兩個server block的主要設定，且example.com解析後的IP位址是192.168.1.10，當一個網頁瀏覽器請求瀏覽example.com時，附圖裡會服務該請求的server block，下列敘述哪一項正確？",
-    "image": "image/L4050046.png",
+    "image": "image/L4050046.PNG",
     "options": [
       "附圖上方的server block",
       "附圖下方的server block",
@@ -3174,7 +3174,7 @@ const quizData = [
   {
     "id": "L4050048",
     "question": "如附圖所示，是Apache記錄錯誤事件的日誌檔之一部分內容，Apache的管理員已經執行過指令sudoa2enmod userdir並重新啟動Apache，且使用者user也在他的家目錄下創立了public_html目錄，並在public_html目錄下建立了一個index.html檔案。假設使用者user無權使用指令sudo，請問下列哪一項指令可以被使用者user用來解決該錯誤事件？",
-    "image": "image/L4050048.png",
+    "image": "image/L4050048.PNG",
     "options": [
       "chmod o+x ~",
       "chmod o+r ~",
