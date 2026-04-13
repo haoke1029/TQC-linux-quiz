@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TQC Linux 310題測驗系統</title>
     <style>
-        /* 基礎樣式 */
+        /* 基礎樣式與手機版優化 */
         body { font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; background: #f0f2f5; color: #333; line-height: 1.6; margin: 0; }
         .container { max-width: 850px; margin: 20px auto; padding: 0 15px; }
         h1 { text-align: center; color: #2c3e50; font-size: 1.8em; margin-bottom: 25px; }
@@ -21,7 +21,7 @@
         
         .question-text { font-size: 1.1em; font-weight: 500; margin-bottom: 15px; color: #2c3e50; word-break: break-all; }
         
-        /* 選項設計 - 針對手機加大點擊區域 */
+        /* 選項設計 */
         .opt-container { margin-bottom: 15px; }
         .opt { 
             display: block; 
@@ -32,36 +32,42 @@
             background: #fcfcfc; 
             transition: all 0.2s; 
             cursor: pointer; 
-            -webkit-tap-highlight-color: transparent; /* 移除手機點擊藍框 */
+            -webkit-tap-highlight-color: transparent;
         }
-        .opt:active { background: #eef6ff; } /* 手機點擊視覺回饋 */
         
-        /* 狀態色彩 */
+        /* 選項狀態顏色 */
         .correct { background: #d4edda !important; border-color: #28a745 !important; color: #155724; font-weight: bold; }
         .wrong { background: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
+        .selected-multi { border-color: #007bff !important; background: #eef6ff !important; } /* 複選暫存色 */
         .disabled { pointer-events: none; opacity: 0.8; }
 
+        /* 按鈕設計 */
+        .btn { 
+            cursor: pointer; background: #007bff; color: #fff; border: none; 
+            padding: 12px 20px; border-radius: 8px; font-size: 14px; width: 100%; 
+            font-weight: bold; transition: background 0.3s; margin: 10px 0;
+        }
+        .btn:hover { background: #0056b3; }
+        
         /* 解析盒 */
         .ans-box { display: none; margin-top: 15px; padding: 15px; background: #fff; border: 2px dashed #28a745; border-radius: 10px; }
         .ans-text { color: #d32f2f; font-weight: bold; font-size: 1.2em; }
         .analysis-content { color: #555; margin-top: 8px; font-size: 0.95em; }
         
-        /* 圖片優化 */
+        /* 圖片 */
         img { display: block; margin: 15px auto; max-width: 100%; height: auto; border-radius: 8px; border: 1px solid #ddd; }
 
-        /* --- 手機版 RWD 優化 --- */
+        /* 手機版適應 */
         @media (max-width: 600px) {
-            h1 { font-size: 1.4em; margin: 15px 0; }
-            .card { padding: 15px; border-radius: 10px; }
-            .question-text { font-size: 1em; }
-            .opt { padding: 12px 15px; font-size: 0.95em; }
-            .ans-box { padding: 12px; }
+            h1 { font-size: 1.4em; }
+            .card { padding: 15px; }
+            .opt { padding: 12px; font-size: 0.95em; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Linux 網路管理測驗</h1>
+        <h1>TQC Linux 網路管理練習</h1>
         <div id="main"></div>
     </div>
 
@@ -69,6 +75,7 @@
     
     <script>
         const main = document.getElementById('main');
+        let tempAnswers = {}; // 紀錄複選題暫選答案
 
         if (typeof quizData !== 'undefined') {
             quizData.forEach((q, i) => {
@@ -77,14 +84,8 @@
                 div.className = 'card';
                 div.id = `q-card-${i}`;
 
-                // 處理題目文字過濾 A B C D 選項
+                // 直接使用題目文字，不再執行可能會誤切 Class A 的 substring 邏輯
                 let displayQuestion = q.question;
-                if (q.options && q.options.length > 0) {
-                    const splitIndex = displayQuestion.search(/\s[A-D][\.\s　]/); 
-                    if (splitIndex !== -1) {
-                        displayQuestion = displayQuestion.substring(0, splitIndex);
-                    }
-                }
 
                 div.innerHTML = `
                     <div class="q-header">
@@ -95,18 +96,20 @@
 
                     ${q.image ? `
                         <div>
-                            <img src="${q.image}" alt="題目圖檔" onerror="this.style.display='none'">
+                            <img src="${q.image}" alt="題目附圖" onerror="this.parentElement.style.display='none'">
                         </div>
                     ` : ''}
                     
                     <div class="opt-container">
                         ${q.options.map((o, idx) => {
                             const letter = String.fromCharCode(65 + idx);
-                            return `<div class="opt" onclick="checkAnswer(this, '${letter}', '${q.answer}', ${i})">
+                            return `<div class="opt" data-letter="${letter}" onclick="handleSelect(this, '${letter}', ${isMulti}, ${i})">
                                         <strong>${letter}.</strong> ${o}
                                     </div>`;
                         }).join('')}
                     </div>
+
+                    ${isMulti ? `<button class="btn" id="submit-${i}" onclick="submitMultiAnswer(${i}, '${q.answer}')">確認送出複選答案</button>` : ''}
 
                     <div class="ans-box" id="ans-box-${i}">
                         <div>正確答案：<span class="ans-text">${q.answer}</span></div>
@@ -119,32 +122,87 @@
                 main.appendChild(div);
             });
         } else {
-            main.innerHTML = '<div class="card">找不到 questions.js，請檢查檔案路徑。</div>';
+            main.innerHTML = '<div class="card">找不到題庫資料，請確認 questions.js 是否正確載入。</div>';
         }
 
-        function checkAnswer(selectedOpt, selectedLetter, correctAnswer, index) {
+        // 處理選擇邏輯
+        function handleSelect(el, letter, isMulti, qIndex) {
+            if (el.classList.contains('disabled')) return;
+
+            if (!isMulti) {
+                // 單選題：直接判定對錯
+                const correctAnswer = quizData[qIndex].answer;
+                checkSingleAnswer(el, letter, correctAnswer, qIndex);
+            } else {
+                // 複選題：切換選中狀態 (不即時判定)
+                if (!tempAnswers[qIndex]) tempAnswers[qIndex] = [];
+                
+                if (tempAnswers[qIndex].includes(letter)) {
+                    tempAnswers[qIndex] = tempAnswers[qIndex].filter(item => item !== letter);
+                    el.classList.remove('selected-multi');
+                } else {
+                    tempAnswers[qIndex].push(letter);
+                    el.classList.add('selected-multi');
+                }
+            }
+        }
+
+        // 單選題判定
+        function checkSingleAnswer(selectedOpt, selectedLetter, correctAnswer, index) {
             const card = document.getElementById(`q-card-${index}`);
-            const ansBox = document.getElementById(`ans-box-${index}`);
             const allOpts = card.querySelectorAll('.opt');
 
-            if (correctAnswer.length === 1) {
-                if (selectedLetter === correctAnswer) {
-                    selectedOpt.classList.add('correct');
-                    selectedOpt.innerHTML += " ✓";
-                } else {
-                    selectedOpt.classList.add('wrong');
-                    selectedOpt.innerHTML += " ✗";
-                    // 顯示正確選項
-                    allOpts.forEach((opt, idx) => {
-                        if (String.fromCharCode(65 + idx) === correctAnswer) opt.classList.add('correct');
-                    });
-                }
+            if (selectedLetter === correctAnswer) {
+                selectedOpt.classList.add('correct');
             } else {
-                alert(`複選題答案為：${correctAnswer}`);
+                selectedOpt.classList.add('wrong');
+                // 標示出正確的那一個
+                allOpts.forEach(opt => {
+                    if (opt.getAttribute('data-letter') === correctAnswer) opt.classList.add('correct');
+                });
+            }
+            showResult(index);
+        }
+
+        // 複選題送出判定
+        function submitMultiAnswer(index, correctAnswer) {
+            const card = document.getElementById(`q-card-${index}`);
+            const submitBtn = document.getElementById(`submit-${index}`);
+            const allOpts = card.querySelectorAll('.opt');
+            
+            // 整理使用者選的答案並排序 (例如選了 B, A 會變成 AB)
+            const userAnsArr = (tempAnswers[index] || []).sort();
+            const userAnsStr = userAnsArr.join('');
+
+            allOpts.forEach(opt => {
+                const letter = opt.getAttribute('data-letter');
+                const isCorrectPart = correctAnswer.includes(letter); // 該選項是否為正確組合的一部分
+                const isSelected = userAnsArr.includes(letter); // 使用者是否有選這個
+
+                if (isSelected && isCorrectPart) {
+                    opt.classList.add('correct');
+                } else if (isSelected && !isCorrectPart) {
+                    opt.classList.add('wrong');
+                } else if (!isSelected && isCorrectPart) {
+                    // 正確但沒選中的，加個提示框
+                    opt.style.border = "2px dashed #28a745";
+                }
+            });
+
+            if (userAnsStr !== correctAnswer) {
+                alert(`答錯了，正確組合是：${correctAnswer}`);
             }
 
+            submitBtn.style.display = 'none';
+            showResult(index);
+        }
+
+        // 顯示解析並鎖定選項
+        function showResult(index) {
+            const card = document.getElementById(`q-card-${index}`);
+            const ansBox = document.getElementById(`ans-box-${index}`);
             ansBox.style.display = 'block';
-            allOpts.forEach(opt => opt.classList.add('disabled'));
+            card.querySelectorAll('.opt').forEach(opt => opt.classList.add('disabled'));
         }
     </script>
 </body>
