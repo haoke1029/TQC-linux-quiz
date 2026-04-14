@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TQC Linux 310題測驗系統</title>
+    <style>
+        /* 樣式保持不變 */
+        body { font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; background: #f0f2f5; color: #333; margin: 0; }
+        .container { max-width: 850px; margin: 20px auto; padding: 0 15px; }
+        h1 { text-align: center; color: #2c3e50; font-size: 1.8em; margin-bottom: 25px; }
+        .card { background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 20px; border-top: 6px solid #007bff; transition: all 0.3s; }
+        .q-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+        .type-tag { font-size: 12px; padding: 2px 8px; border-radius: 12px; color: #fff; font-weight: bold; }
+        .single { background: #007bff; }
+        .multi { background: #dc3545; }
+        .question-text { font-size: 1.1em; font-weight: 500; margin-bottom: 15px; color: #2c3e50; }
+        .opt { display: block; padding: 14px 18px; border: 2px solid #e9ecef; margin: 10px 0; border-radius: 10px; background: #fcfcfc; cursor: pointer; }
+        .correct { background: #d4edda !important; border-color: #28a745 !important; color: #155724; }
+        .wrong { background: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
+        .selected-multi { border-color: #007bff !important; background: #eef6ff !important; } 
+        .disabled { pointer-events: none; }
+        .btn { cursor: pointer; background: #007bff; color: #fff; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; width: 100%; margin: 10px 0; }
+        .ans-box { display: none; margin-top: 15px; padding: 15px; background: #fff; border: 2px dashed #28a745; border-radius: 10px; }
+        .ans-text { color: #d32f2f; font-weight: bold; font-size: 1.2em; }
+        img { display: block; margin: 15px auto; max-width: 100%; border-radius: 8px; border: 1px solid #ddd; }
+        
+        /* 置頂進度條 */
+        #top-info-bar { position: sticky; top: 0; z-index: 1000; border-top: 6px solid #6c757d; }
+        .chapter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin-top: 15px; }
+        .btn-chapter { background: #6c757d; font-size: 0.9em; padding: 10px; }
+        .review-header { background: white; border-left: 8px solid #007bff; padding: 25px; margin-bottom: 30px; border-radius: 15px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>TQC Linux 網路管理系統</h1>
+
+        <div id="mode-selector" class="card" style="text-align: center;">
+            <h2 class="mb-4">請選擇測驗模式</h2>
+            <div style="border: 1px solid #eee; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                <h4 style="color: #28a745;">📖 練習模式</h4>
+                <div class="chapter-grid">
+                    <button class="btn btn-chapter" onclick="initQuiz('practice', 'L401')">L401</button>
+                    <button class="btn btn-chapter" onclick="initQuiz('practice', 'L402')">L402</button>
+                    <button class="btn btn-chapter" onclick="initQuiz('practice', 'L403')">L403</button>
+                    <button class="btn btn-chapter" onclick="initQuiz('practice', 'L404')">L404</button>
+                    <button class="btn btn-chapter" onclick="initQuiz('practice', 'L405')">L405</button>
+                    <button class="btn btn-chapter" onclick="initQuiz('practice', 'L406')">L406</button>
+                    <button class="btn btn-chapter" style="background: #28a745;" onclick="initQuiz('practice', 'ALL')">全部章節</button>
+                </div>
+            </div>
+            <div style="border: 1px solid #eee; padding: 20px; border-radius: 10px;">
+                <h4 style="color: #dc3545;">⚖️ 考試模式</h4>
+                <button class="btn" style="background: #dc3545;" onclick="initQuiz('exam')">進入模擬考</button>
+            </div>
+        </div>
+
+        <div id="quiz-app" style="display: none;">
+            <div id="top-info-bar" class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <strong id="display-progress">進度：0 / 0</strong>
+                    <div id="exam-actions">
+                        <button class="btn" style="width: auto; margin: 0; background: #6c757d;" onclick="confirmSubmit()">結束作答</button>
+                    </div>
+                </div>
+            </div>
+            <div id="review-board" style="display: none;"></div>
+            <div id="main"></div>
+        </div>
+    </div>
+
+    <script src="questions.js"></script>
+    
+    <script>
+        const main = document.getElementById('main');
+        let currentQuizData = [];
+        let isExamMode = false;
+        let examScore = 0;
+        let answeredCount = 0;
+        let userSelections = {}; 
+        let wrongQuestions = []; 
+
+        function initQuiz(mode, chapter = 'ALL') {
+            document.getElementById('mode-selector').style.display = 'none';
+            document.getElementById('quiz-app').style.display = 'block';
+            
+            // 重設變數
+            answeredCount = 0;
+            examScore = 0;
+            wrongQuestions = [];
+            userSelections = {};
+
+            if (mode === 'exam') {
+                isExamMode = true;
+                document.getElementById('top-info-bar').style.borderTopColor = "#dc3545";
+                currentQuizData = [...quizData].sort(() => Math.random() - 0.5).slice(0, 50);
+            } else {
+                isExamMode = false;
+                document.getElementById('top-info-bar').style.borderTopColor = "#28a745";
+                currentQuizData = (chapter === 'ALL') ? quizData : quizData.filter(q => q.id.startsWith(chapter));
+            }
+            
+            updateProgress();
+            renderQuestions();
+        }
+
+        function renderQuestions() {
+            main.innerHTML = '';
+            currentQuizData.forEach((q, i) => {
+                const isMulti = q.answer.length > 1;
+                const div = document.createElement('div');
+                div.className = 'card';
+                div.id = `q-card-${i}`;
+                div.innerHTML = `
+                    <div class="q-header">
+                        <span class="type-tag ${isMulti ? 'multi' : 'single'}">${isMulti ? '複選' : '單選'}</span>
+                        <strong>題號: ${q.id}</strong>
+                    </div>
+                    <div class="question-text">${i+1}. ${q.question}</div>
+                    ${q.image ? `<div><img src="${q.image}" onerror="this.parentElement.style.display='none'"></div>` : ''}
+                    <div class="opt-container" id="opt-container-${i}">
+                        ${q.options.map((o, idx) => {
+                            const letter = String.fromCharCode(65 + idx);
+                            return `<div class="opt" id="opt-${i}-${letter}" data-letter="${letter}" onclick="handleSelect(this, '${letter}', ${isMulti}, ${i})"><strong>${letter}.</strong> ${o}</div>`;
+                        }).join('')}
+                    </div>
+                    <button class="btn" id="submit-${i}" onclick="confirmAnswer(${i})">確認本題答案</button>
+                    <div class="ans-box" id="ans-box-${i}">
+                        <div>正確答案：<span class="ans-text">${q.answer}</span></div>
+                        <div class="analysis-content"><strong>【解析】</strong><br>${q.analysis ? q.analysis.replace(/\n/g, '<br>') : '暫無解析'}</div>
+                    </div>
+                `;
+                main.appendChild(div);
+            });
+        }
+
+        function handleSelect(el, letter, isMulti, qIndex) {
+            if (el.classList.contains('disabled')) return;
+            if (!userSelections[qIndex]) userSelections[qIndex] = [];
+            if (!isMulti) {
+                const allOpts = document.getElementById(`opt-container-${qIndex}`).querySelectorAll('.opt');
+                allOpts.forEach(opt => opt.classList.remove('selected-multi'));
+                userSelections[qIndex] = [letter];
+                el.classList.add('selected-multi');
+            } else {
+                if (userSelections[qIndex].includes(letter)) {
+                    userSelections[qIndex] = userSelections[qIndex].filter(item => item !== letter);
+                    el.classList.remove('selected-multi');
+                } else {
+                    userSelections[qIndex].push(letter);
+                    el.classList.add('selected-multi');
+                }
+            }
+        }
+
+        function confirmAnswer(index) {
+            const selected = userSelections[index] || [];
+            if (selected.length === 0) { alert("請先選擇答案！"); return; }
+            const q = currentQuizData[index];
+            const isCorrect = [...selected].sort().join('') === q.answer;
+
+            if (isExamMode) {
+                if (isCorrect) examScore += 2; else wrongQuestions.push(index);
+                lockCard(index);
+            } else {
+                showVisualResult(index, selected, q);
+                if (!isCorrect) alert(`答錯了！正確答案是：${q.answer}`);
+                showResult(index);
+            }
+            document.getElementById(`submit-${index}`).style.display = 'none';
+            answeredCount++;
+            updateProgress();
+            
+            if (isExamMode && answeredCount === 50) setTimeout(confirmSubmit, 500);
+        }
+
+        function updateProgress() {
+            document.getElementById('display-progress').innerText = `進度：${answeredCount} / ${currentQuizData.length}`;
+        }
+
+        function lockCard(index) {
+            const card = document.getElementById(`q-card-${index}`);
+            card.querySelectorAll('.opt').forEach(opt => opt.classList.add('disabled'));
+            card.style.opacity = "0.5";
+        }
+
+        function showVisualResult(index, selected, q) {
+            const container = document.getElementById(`opt-container-${index}`);
+            container.querySelectorAll('.opt').forEach(opt => {
+                const letter = opt.getAttribute('data-letter');
+                if (selected.includes(letter) && q.answer.includes(letter)) opt.classList.add('correct');
+                else if (selected.includes(letter) && !q.answer.includes(letter)) opt.classList.add('wrong');
+                else if (!selected.includes(letter) && q.answer.includes(letter)) opt.style.border = "2px dashed #28a745";
+            });
+        }
+
+        function showResult(index) {
+            document.getElementById(`ans-box-${index}`).style.display = 'block';
+            document.getElementById(`q-card-${index}`).querySelectorAll('.opt').forEach(opt => opt.classList.add('disabled'));
+        }
+
+        function confirmSubmit() {
+            if (confirm(`確定要結束作答嗎？`)) {
+                if (isExamMode) submitExam(); else location.reload();
+            }
+        }
+
+        function submitExam() {
+            document.getElementById('top-info-bar').style.display = 'none';
+            const board = document.getElementById('review-board');
+            board.style.display = 'block';
+            const isPass = examScore >= 70;
+            board.innerHTML = `
+                <div class="review-header">
+                    <h2 style="color: ${isPass ? '#28a745' : '#dc3545'}">${isPass ? '🎉 測驗及格' : '💀 測驗不及格'}</h2>
+                    <div class="score-display">${examScore} <span style="font-size: 0.5em; color: #666;">分</span></div>
+                    <p>答對題數：<b>${(examScore/2)}</b> / 50</p>
+                    <button class="btn" style="width:auto; padding: 10px 30px; background:#007bff" onclick="location.reload()">回主選單</button>
+                </div>
+            `;
+            currentQuizData.forEach((q, i) => {
+                const card = document.getElementById(`q-card-${i}`);
+                if (wrongQuestions.includes(i)) {
+                    card.style.display = 'block'; card.style.opacity = '1';
+                    showVisualResult(i, userSelections[i] || [], q);
+                    document.getElementById(`ans-box-${i}`).style.display = 'block';
+                } else { card.style.display = 'none'; }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
